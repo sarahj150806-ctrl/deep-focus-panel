@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 CyberAcademy - Deep Focus Matrix 📚</title>
+    <style>
+        :root {
+            --bg-color: #060814; 
+            --panel-bg: rgba(15, 22, 42, 0.75); 
+            --input-bg: rgba(30, 41, 59, 0.5); 
+            --text-main: #f1f5f9; 
+            --text-neon: #a855f7; 
+            --accent-glow: rgba(168, 85, 247, 0.4);
+            
+            /* DYNAMIC COLORS FOR PRIORITIES */
+            --priority-high-bg: rgba(244, 63, 94, 0.15); 
+            --priority-high-border: #f43f5e;
+            
+            --priority-medium-bg: rgba(245, 158, 11, 0.15); 
+            --priority-medium-border: #f59e0b;
+            
+            --priority-low-bg: rgba(16, 185, 129, 0.15); 
+            --priority-low-border: #10b981;
+            
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(88, 28, 135, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 540px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.6), 0 0 2px var(--text-neon);
+            position: relative;
+            border: 1px solid rgba(168, 85, 247, 0.25);
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 0 15px var(--accent-glow);
+        }
+        h1 span { color: var(--text-neon); }
+
+        form { display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px; }
+
+        input[type="text"], select, button.add-btn {
+            padding: 14px; border-radius: 12px; border: 1px solid rgba(168, 85, 247, 0.2);
+            background-color: var(--input-bg); color: var(--text-main); outline: none;
+            font-size: 14px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        input[type="text"]:focus, select:focus { 
+            border-color: var(--text-neon); 
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+            background-color: rgba(30, 41, 59, 0.8);
+        }
+        input::placeholder { color: #475569; }
+
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        
+        button.add-btn {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white; border: none; font-weight: 700; cursor: pointer;
+            letter-spacing: 0.5px; text-transform: uppercase;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.25);
+        }
+        button.add-btn:hover { 
+            background: linear-gradient(135deg, #6d28d9, #9333ea);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+            transform: translateY(-1px);
+        }
+
+        ul { list-style: none; padding: 0; margin: 0; }
+
+        .list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px; border-radius: 14px; margin-bottom: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        /* PRIORITY CARDS THEMES */
+        .list-item.High { 
+            background-color: var(--priority-high-bg); 
+            border-left: 6px solid var(--priority-high-border);
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.1);
+        }
+        .list-item.Medium { 
+            background-color: var(--priority-medium-bg); 
+            border-left: 6px solid var(--priority-medium-border);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
+        }
+        .list-item.Low { 
+            background-color: var(--priority-low-bg); 
+            border-left: 6px solid var(--priority-low-border);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+
+        .list-item.completed { opacity: 0.25; filter: grayscale(50%); text-decoration: line-through; }
+
+        .item-details h3 { margin: 0 0 6px 0; font-size: 16px; font-weight: 600; color: #fff; }
+        .item-details p { margin: 0; font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+        
+        /* Pill Badges */
+        .priority-tag {
+            font-size: 11px; font-weight: 800; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 6px; margin-left: 8px; vertical-align: middle;
+        }
+        .tag-High { background: var(--priority-high-border); color: #fff; }
+        .tag-Medium { background: var(--priority-medium-border); color: #000; }
+        .tag-Low { background: var(--priority-low-border); color: #000; }
+
+        .btn-delete { background: none; border: none; color: #f43f5e; cursor: pointer; font-size: 16px; padding: 5px; opacity: 0.6; transition: opacity 0.2s; }
+        .btn-delete:hover { opacity: 1; }
+
+        /* MODAL OVERLAY SETUP */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 6, 14, 0.85); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .custom-modal {
+            background: rgba(15, 22, 42, 0.95); border: 1px solid rgba(168, 85, 247, 0.4);
+            padding: 35px; border-radius: 20px; text-align: center; max-width: 440px; width: 90%;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.25);
+            animation: modalFade 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalFade { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .modal-title { font-size: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; color: #fff; }
+        .modal-body { font-size: 15px; margin-bottom: 24px; color: var(--text-muted); line-height: 1.6; }
+        .modal-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .modal-btn { padding: 12px 18px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 12px; text-transform: uppercase; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-secondary { background-color: #334155; color: #e2e8f0; }
+        .btn-secondary:hover { background-color: #475569; }
+        .modal-input {
+            width: 90%; padding: 12px; margin-bottom: 20px; border-radius: 10px; 
+            border: 1px solid rgba(168, 85, 247, 0.3); background: rgba(6, 8, 20, 0.6); color: white; text-align: center; outline: none;
+        }
+        .modal-input:focus { border-color: var(--text-neon); }
+    </style>
+</head>
+<body>
+
+<div id="alarm-modal-wrapper" class="modal-overlay">
+    <div class="custom-modal">
+        <div id="modal-title-text" class="modal-title">System Alert</div>
+        <div id="modal-body-text" class="modal-body">Processing matrix event parameters...</div>
+        <div id="modal-input-area"></div>
+        <div id="modal-btn-area" class="modal-buttons"></div>
+    </div>
+</div>
+
+<div class="main-container">
+    <h1>🎓 CyberAcademy <span>Matrix</span> 📚</h1>
+
+    <form id="todo-form">
+        <input type="text" id="task-title" placeholder="Enter Chapter, Assignment, or Project Target... 📝" required>
+        
+        <div class="grid-inputs">
+            <select id="task-priority">
+                <option value="Low">Low Priority</option>
+                <option value="Medium" selected>Medium Priority</option>
+                <option value="High">High Priority</option>
+            </select>
+            <select id="task-category">
+                <option value="School" selected>Study & Academy 📚</option>
+                <option value="Work">Professional Work 👔</option>
+                <option value="Personal">Research & Projects 🔬</option>
+            </select>
+        </div>
+
+        <div class="grid-inputs">
+            <input type="text" id="task-start" placeholder="Start Time (e.g., 14:00 or 2:00 PM)" required>
+            <input type="text" id="task-end" placeholder="End Time (e.g., 14:45 or 2:45 PM)" required>
+        </div>
+
+        <button type="submit" class="add-btn">Initialize Focus Block ⚡</button>
+    </form>
+
+    <ul id="todo-list"></ul>
+</div>
+
+<script>
+    const todoForm = document.getElementById('todo-form');
+    const todoList = document.getElementById('todo-list');
+    const modalWrapper = document.getElementById('alarm-modal-wrapper');
+    const categoryEmojis = { 'School': '📚', 'Work': '👔', 'Personal': '🔬' };
+
+    // 🌟 SOUND LOADER PATHED TO FLASK STATIC ASSETS
+    const alarmSound = new Audio("/static/alarm.mp3");
+    alarmSound.loop = true; 
+    let audioUnlocked = false;
+
+    // 🔓 USER INPUT LISTENER TO BYPASS BROWSER BLOCKING POLICIES
+    document.body.addEventListener('click', () => {
+        if (!audioUnlocked) {
+            alarmSound.play().then(() => {
+                alarmSound.pause();
+                alarmSound.currentTime = 0;
+                audioUnlocked = true;
+                console.log("✅ Secure Audio Channel Synced!");
+            }).catch(err => console.log("Awaiting configuration unlock..."));
+        }
+    }, { once: true });
+
+    function startAudioAlarm() {
+        alarmSound.volume = 1.0; 
+        let playPromise = alarmSound.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.warn("⚠️ Sound suspended by layout policy context.", error);
+            });
+        }
+    }
+
+    function stopAudioAlarm() {
+        alarmSound.pause();
+        alarmSound.currentTime = 0;
+    }
+
+    function showCustomAlert(title, text, actionButtonsHTML, inputHTML = "") {
+        document.getElementById('modal-title-text').innerHTML = title;
+        document.getElementById('modal-body-text').innerHTML = text;
+        document.getElementById('modal-input-area').innerHTML = inputHTML;
+        document.getElementById('modal-btn-area').innerHTML = actionButtonsHTML;
+        modalWrapper.style.display = 'flex';
+        startAudioAlarm();
+    }
+
+    function closeCustomModal() {
+        modalWrapper.style.display = 'none';
+        stopAudioAlarm();
+    }
+
+    async function loadTasks() {
+        const response = await fetch('/api/tasks');
+        const tasks = await response.json();
+        
+        todoList.innerHTML = '';
+        tasks.forEach(async (task) => {
+            const li = document.createElement('li');
+            li.className = `list-item ${task.priority} ${task.completed ? 'completed' : ''}`;
+            
+            li.innerHTML = `
+                <div class="item-details">
+                    <h3>${task.title} <span class="priority-tag tag-${task.priority}">${task.priority}</span> <span class="category-sticker">${categoryEmojis[task.category] || ''}</span></h3>
+                    <p><span>⏳</span> Run: ${task.startTime || '---'} &nbsp;&bull;&nbsp; <span>🏁</span> Limit: ${task.endTime || '---'}</p>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-delete" onclick="deleteTask(${task.id})">✕</button>
+                </div>
+            `;
+            todoList.appendChild(li);
+
+            if (task.triggerStartAlert && !task.completed) {
+                await fetch(`/api/tasks/${task.id}/action`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'clear_start_alert' })
+                });
+
+                showCustomAlert(
+                    "⚡ Focus Run Activated",
+                    `Your scheduled academic block <b>"${task.title}"</b> is opening right now. Eliminate distractions!`,
+                    `<button class="modal-btn btn-primary" onclick="closeCustomModal()">Enter Matrix 🚀</button>`
+                );
+            }
+
+            if (task.triggerEndAlert && !task.completed) {
+                await fetch(`/api/tasks/${task.id}/action`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'clear_end_alert' })
+                });
+                handleTaskFinishPrompt(task.id, task.title);
+            }
+        });
+    }
+
+    function handleTaskFinishPrompt(taskId, taskTitle) {
+        showCustomAlert(
+            "🏁 Target Deadline Hit",
+            `Has your session objective for <b>"${taskTitle}"</b> been completely checked off?`,
+            `<button class="modal-btn btn-primary" onclick="submitFinishAction(${taskId}, true)">Target Achieved Victory 🎉</button>
+             <button class="modal-btn btn-secondary" onclick="triggerExtensionPrompt(${taskId}, '${taskTitle}')">Extend Run ⏳</button>`
+        );
+    }
+
+    async function submitFinishAction(taskId, isCompleted) {
+        if (isCompleted) {
+            await fetch(`/api/tasks/${taskId}/action`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'complete' })
+            });
+            showCustomAlert(
+                "Objective Cleared! 🏆", 
+                "Task parameters completely mapped. Excellent study velocity!", 
+                `<button class="modal-btn btn-primary" onclick="closeCustomModal()">Back to Terminal</button>`
+            );
+            loadTasks();
+        }
+    }
+
+    function triggerExtensionPrompt(taskId, taskTitle) {
+        showCustomAlert(
+            "Modify Target Matrix ⏳",
+            `Provide a modified completion timeline window for <b>"${taskTitle}"</b>:`,
+            `<button class="modal-btn btn-primary" onclick="promptExtensionScope(${taskId})">Next Step ➡️</button>
+             <button class="modal-btn btn-secondary" onclick="closeCustomModal()">Dismiss</button>`,
+            `<input type="text" id="modal-extend-field" class="modal-input" placeholder="e.g., 18:30 or 6:30 PM">`
+        );
+    }
+
+    // 🌌 PROMPTS USER FOR TIME RIPPLE CONFIGURATION RANGE BOUNDS
+    function promptExtensionScope(taskId) {
+        const newTime = document.getElementById('modal-extend-field').value;
+        if (!newTime) {
+            alert("Please enter a new end time first!");
+            return;
+        }
+
+        showCustomAlert(
+            "Select Ripple Scope 🌌",
+            `How should this time adjustment ripple across your remaining focus grid?`,
+            `<button class="modal-btn btn-primary" onclick="submitExtension(${taskId}, '${newTime}', 'only_this')">Just This Task</button>
+             <button class="modal-btn btn-primary" style="background: #3b82f6;" onclick="submitExtension(${taskId}, '${newTime}', 'subsequent')">Delay Next Tasks ⏳</button>
+             <button class="modal-btn btn-secondary" style="background: #ef4444;" onclick="submitExtension(${taskId}, '${newTime}', 'all')">Delay All Tasks 🚨</button>`
+        );
+    }
+
+    async function submitExtension(taskId, newTime, scope) {
+        const response = await fetch(`/api/tasks/${taskId}/action`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                action: 'extend', 
+                newTime: newTime,
+                scope: scope 
+            })
+        });
+        
+        if (response.ok) {
+            closeCustomModal();
+            loadTasks();
+        } else {
+            alert("❌ Syntax error. Please structure standard time configuration (e.g. 15:45 or 3:45 PM).");
+        }
+    }
+
+    todoForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            title: document.getElementById('task-title').value,
+            priority: document.getElementById('task-priority').value,
+            category: document.getElementById('task-category').value,
+            startTime: document.getElementById('task-start').value, 
+            endTime: document.getElementById('task-end').value
+        };
+
+        const response = await fetch('/api/tasks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            todoForm.reset();
+            loadTasks();
+        } else {
+            alert(result.message);
+        }
+    });
+
+    async function deleteTask(id) {
+        await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+        loadTasks();
+    }
+
+    loadTasks();
+    setInterval(loadTasks, 3000);
+</script>
+</body>
+</html>
