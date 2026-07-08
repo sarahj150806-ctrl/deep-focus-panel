@@ -30,4 +30,3 @@ MINI PROJECTS-2/
 ├── static/
 │   └── alarm.mp3     # Local audio asset folder for alert execution
 └── App.py           # Multi-threaded Flask core server & time tracking loops
-<img width="1879" height="1032" alt="image" src="https://github.com/user-attachments/assets/62eeba9d-f7d7-46ff-88ee-aa938ee5d9bc" />
