@@ -1,3 +1,5 @@
+<img width="1879" height="1032" alt="Screenshot 2026-07-08 210407" src="https://github.com/user-attachments/assets/a57345f6-9edb-4e13-83dc-571b473ef663" />
+
 # 🎓 CyberAcademy Matrix — Deep Focus Task Dashboard
 
 A premium, glassmorphic Python Flask task manager and study assistant designed to optimize academic and professional focus sprints. It features dynamic priority color-coding, custom background audio triggers, and an automated timeline shifting system.
