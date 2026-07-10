@@ -1,4 +1,4 @@
-<img src="static/websitw.jpg" alt="CyberAcademy Matrix Terminal Layout" width="100%"/>
+<img src="static/website.jpg" alt="CyberAcademy Matrix Terminal Layout" width="100%"/>
 
 # 🎓 CyberAcademy Matrix — Deep Focus Task Dashboard
 
