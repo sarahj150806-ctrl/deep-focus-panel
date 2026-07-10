@@ -1,4 +1,4 @@
-<img width="1879" height="1032" alt="Screenshot 2026-07-08 210407" src="https://github.com/user-attachments/assets/a57345f6-9edb-4e13-83dc-571b473ef663" />
+<img width="1879" height="1032" alt="website.jpg" src="https://github.com/user-attachments/assets/a57345f6-9edb-4e13-83dc-571b473ef663" />
 
 # 🎓 CyberAcademy Matrix — Deep Focus Task Dashboard
 
