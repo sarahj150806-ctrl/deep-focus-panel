@@ -5,9 +5,6 @@ import time
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# Typing hints to make VS Code's red lines go away
-from typing import Type
-
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'matrix_secret_protocol_99x')
 
@@ -31,7 +28,7 @@ class User(db.Model):
 
 class Task(db.Model):
     __tablename__ = 'tasks'
-    id = db.Column(db.BigInteger, primary_key=True)
+    id = db.Column(db.String(50), primary_key=True)  
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     priority = db.Column(db.String(20), nullable=False)
@@ -42,7 +39,7 @@ class Task(db.Model):
     startAlertTriggered = db.Column(db.Boolean, default=False)
     endAlertTriggered = db.Column(db.Boolean, default=False)
 
-# Auto-build tables inside the cloud instance
+# Auto-build tables inside the instance
 with app.app_context():
     db.create_all()
 
@@ -148,7 +145,7 @@ def add_task():
     if not start_parsed or not end_parsed:
         return jsonify({"success": False, "message": "❌ Invalid time format syntax!"}), 400
 
-    task_id = int(time.time())
+    task_id = str(int(time.time()))  
     
     new_task = Task(
         id=task_id,
@@ -164,7 +161,7 @@ def add_task():
 
     return jsonify({"success": True})
 
-@app.route('/api/tasks/<int:task_id>/action', methods=['POST'])
+@app.route('/api/tasks/<string:task_id>/action', methods=['POST'])  
 def task_action(task_id):
     if 'user_id' not in session:
         return jsonify({"success": False, "message": "Unauthorized"}), 401
@@ -172,7 +169,7 @@ def task_action(task_id):
     data = request.json
     action = data.get('action') 
     
-    task = Task.query.filter_by(id=task_id, user_id=session['user_id']).first()
+    task = Task.query.filter_by(id=str(task_id), user_id=session['user_id']).first()
     if not task:
         return jsonify({"success": False, "message": "Task not found"}), 404
 
@@ -193,57 +190,32 @@ def task_action(task_id):
     
     elif action == "extend":
         try:
-            minutes_to_add = int(data.get('minutes', 10))
+            minutes_to_add = int(data.get('minutes', 5))
         except:
-            minutes_to_add = 10
+            minutes_to_add = 5
             
-        scope = data.get('scope', 'only_this')
-        
+        # REAL ALARM SNOOZE LOGIC:
+        # Pushes ONLY the current task's end time out, resetting the alert system.
+        # No timeline shifting or task scrambling code runs here anymore.
         try:
             old_end_obj = datetime.datetime.strptime(task.endTime, "%I:%M %p")
             new_end_obj = old_end_obj + datetime.timedelta(minutes=minutes_to_add)
             task.endTime = new_end_obj.strftime("%I:%M %p")
-            task.endAlertTriggered = False
+            task.endAlertTriggered = False  # Allows the alarm to fire again after 5 mins!
         except Exception as e:
             return jsonify({"success": False, "message": str(e)}), 500
-        
-        if scope in ['all', 'subsequent']:
-            all_tasks = Task.query.filter_by(user_id=session['user_id']).order_by(Task.id.asc()).all()
-            target_idx = -1
-            for idx, t in enumerate(all_tasks):
-                if t.id == task_id:
-                    target_idx = idx
-                    break
-
-            for shift_idx, t in enumerate(all_tasks):
-                if t.completed: 
-                    continue
-                if scope == 'subsequent' and shift_idx <= target_idx: 
-                    continue
-                if scope == 'all' and t.id == task_id: 
-                    continue
-
-                def shift_time_str(time_str, mins):
-                    if not time_str: return time_str
-                    t_obj = datetime.datetime.strptime(time_str, "%I:%M %p")
-                    return (t_obj + datetime.timedelta(minutes=mins)).strftime("%I:%M %p")
-
-                t.startTime = shift_time_str(t.startTime, minutes_to_add)
-                t.endTime = shift_time_str(t.endTime, minutes_to_add)
-                t.startAlertTriggered = False
-                t.endAlertTriggered = False
 
         db.session.commit()
         return jsonify({"success": True})
 
     return jsonify({"success": False, "message": "Invalid Action"}), 400
 
-@app.route('/api/tasks/<int:task_id>', methods=['DELETE'])
+@app.route('/api/tasks/<string:task_id>', methods=['DELETE'])  
 def delete_task(task_id):
     if 'user_id' not in session:
         return jsonify({"success": False, "message": "Unauthorized"}), 401
 
-    task = Task.query.filter_by(id=task_id, user_id=session['user_id']).first()
+    task = Task.query.filter_by(id=str(task_id), user_id=session['user_id']).first()
     if task:
         db.session.delete(task)
         db.session.commit()
