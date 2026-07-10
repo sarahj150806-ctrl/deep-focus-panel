@@ -1,4 +1,4 @@
-<img width="1879" height="1032" alt="website.jpg" src="https://github.com/user-attachments/assets/a57345f6-9edb-4e13-83dc-571b473ef663" />
+<img src="static/websitw.jpg" alt="CyberAcademy Matrix Terminal Layout" width="100%"/>
 
 # 🎓 CyberAcademy Matrix — Deep Focus Task Dashboard
 
